@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>SAPO QUOTE PRO - BÁO GIÁ NHANH</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #007BFF; --primary-hover: #0056b3;
+      --success: #00C871; --success-hover: #00a85f;
+      --warning: #f59e0b;
+      --text-main: #1e293b; --text-muted: #64748b;
+      --bg-app: #f1f5f9; --bg-card: #ffffff;
+      --border-light: #e2e8f0; --border-focus: #94a3b8;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-app); color: var(--text-main); padding: 30px 15px; }
+    .main-container { max-width: 800px; margin: 0 auto; }
+    .app-header { text-align: center; margin-bottom: 30px; }
+    .app-header h1 { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; margin-bottom: 5px; text-transform: uppercase;}
+    .app-header p { font-size: 14px; color: var(--text-muted); }
+    .card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px;}
+    .card-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px;}
+    .form-group { margin-bottom: 18px; }
+    .form-group:last-child { margin-bottom: 0; }
+    label.field-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+    input[type="text"], input[type="number"], select {
+      width: 100%; padding: 12px 14px; font-size: 14px; font-family: 'Inter', sans-serif;
+      border: 1px solid var(--border-light); border-radius: 8px; background-color: #f8fafc; transition: 0.2s; outline: none;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--primary); background-color: #fff; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); }
+    .input-row { display: flex; gap: 15px; }
+    .input-row > div { flex: 1; }
+    .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .option-grid.col-1 { grid-template-columns: 1fr; }
+    .option-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .radio-card, .check-card {
+      display: flex; align-items: center; padding: 12px 14px; border: 1px solid var(--border-light);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; font-weight: 500; background: #fff; user-select: none;
+    }
+    .radio-card:hover, .check-card:hover { border-color: var(--border-focus); background: #f8fafc; }
+    .radio-card input, .check-card input[type="checkbox"] { position: absolute; opacity: 0; cursor: pointer; }
+    .checkmark {
+      position: relative; display: inline-block; width: 18px; height: 18px; min-width: 18px;
+      border: 2px solid var(--border-focus); margin-right: 12px; transition: 0.2s;
+    }
+    .radio-card .checkmark { border-radius: 50%; }
+    .check-card .checkmark { border-radius: 4px; }
+    .radio-card input:checked ~ .checkmark, .check-card input:checked ~ .checkmark { border-color: var(--primary); background-color: var(--primary); }
+    .radio-card input:checked ~ .checkmark::after {
+      content: ""; position: absolute; top: 4px; left: 4px; width: 6px; height: 6px; border-radius: 50%; background: white;
+    }
+    .check-card input:checked ~ .checkmark::after {
+      content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+    }
+    .radio-card.active, .check-card.active { border-color: var(--primary); background-color: #f0f7ff; }
+    .radio-card.disabled, .check-card.disabled { opacity: 0.5; cursor: not-allowed; background: #f1f5f9; }
+    .addon-item { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .qty-control { display: flex; align-items: center; gap: 5px; }
+    .qty-btn {
+      background: #e2e8f0; border: none; width: 28px; height: 28px; border-radius: 6px;
+      font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #333; transition: 0.2s;
+    }
+    .qty-btn:hover { background: #cbd5e1; }
+    .qty-btn.plus { background: #dbeafe; color: var(--primary); }
+    .qty-btn.plus:hover { background: #bfdbfe; }
+    .qty-input { width: 40px !important; text-align: center; padding: 5px !important; margin: 0 !important; font-weight: bold; background: white;}
+    .discount-input {
+      width: 65px !important; padding: 4px 8px !important; font-size: 12px !important; margin: 0 !important;
+      border: 1px solid #94a3b8 !important; text-align: center; height: 26px; border-radius: 4px !important;
+    }
+    .btn-submit {
+      background-color: var(--success); color: white; border: none; padding: 18px 20px; font-size: 16px;
+      font-weight: 700; cursor: pointer; border-radius: 10px; width: 100%; text-transform: uppercase;
+      margin-top: 10px; margin-bottom: 30px; transition: 0.2s; box-shadow: var(--shadow-sm); letter-spacing: 0.5px;
+    }
+    .btn-submit:hover { background-color: var(--success-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .footer-credits { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 40px;}
+    .footer-credits .team { font-weight: 700; color: var(--primary); }
+    .quote-wrapper { display: none; margin-top: 20px; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .action-bar { display: flex; justify-content: center; margin-bottom: 20px; }
+    .btn-print {
+      background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 15px; font-weight: 600;
+      border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-sm);
+    }
+    .btn-print:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .a4-paper {
+      background: white; width: 100%; max-width: 800px; margin: 0 auto; padding: 40px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-radius: 8px; color: #000; font-family: 'Inter', sans-serif;
+    }
+    .quote-header { margin-bottom: 20px; }
+    .header-top { display: flex; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 15px; }
+    .logo-sec { flex: 0 0 180px; text-align: left; }
+    .logo-sec img { max-width: 160px; max-height: 48px; object-fit: contain; }
+    .info-sec { flex: 1; font-size: 14px; line-height: 1.5; color: #333; }
+    .info-sec .company-name { font-weight: 700; font-size: 16px; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; }
+    .quote-date { text-align: right; font-style: italic; font-size: 14px; margin-bottom: 15px; }
+    .quote-title-doc { text-align: center; font-weight: 800; font-size: 19px; margin-bottom: 15px; text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px;}
+    .quote-intro { font-size: 14px; line-height: 1.6; margin-bottom: 15px; text-align: justify; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: center; vertical-align: middle; font-size: 12px; }
+    th { background-color: var(--primary); color: white; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+    td.text-left { text-align: left; line-height: 1.6; }
+    .text-red { color: #dc2626; font-weight: 700; }
+    .text-bold { font-weight: 600; color: #0f172a; }
+    .text-green { color: #16a34a; font-weight: 700; }
+    .device-img { width: 65px; height: 65px; object-fit: contain; border-radius: 4px; border: 1px solid #e2e8f0; background-color: #fff; padding: 2px; }
+    .daily-cost, .monthly-after-discount { font-size: 11px; margin-top: 4px; padding: 3px 6px; border-radius: 4px; display: inline-block; font-weight: 600; }
+    .daily-cost { color: var(--primary); background: #eff6ff; }
+    .monthly-after-discount { color: #dc2626; background: #fef2f2; }
+    .quote-footer { font-size: 14px; line-height: 1.6; color: #333; margin-top: 15px; page-break-inside: avoid; }
+    .contact-info { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px; }
+    .contact-info b { display: inline-block; width: 160px; color: #475569; }
+    .compare-active .card-title { color: var(--warning); border-bottom-color: #fde68a; }
+    .compare-active .radio-card.active, .compare-active .check-card.active { border-color: var(--warning); background-color: #fffbeb; }
+    .compare-active .radio-card input:checked ~ .checkmark, .compare-active .check-card input:checked ~ .checkmark { border-color: var(--warning); background-color: var(--warning); }
+    .compare-btn { background: #e0f2fe; border: 2px dashed #0284c7; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; margin-bottom: 20px; font-weight: 800; color: #0284c7; transition: 0.2s; text-transform: uppercase; font-size: 15px;}
+    .compare-btn:hover { background: #bae6fd; transform: translateY(-2px); }
+    .highlight-opt2 { border: 2px solid var(--warning) !important; background-color: #fffdf5; position: relative; }
+    .badge-fomo { position: absolute; top: -12px; right: -10px; background: #dc2626; color: white; font-weight: bold; padding: 4px 10px; border-radius: 12px; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; }
+    .strike-price { text-decoration: line-through; color: #94a3b8; font-size: 11px; margin-right: 5px; }
+    /* COMBO badge */
+    .combo-badge { display: inline-block; background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.5px; text-transform: uppercase; }
+    .page-break { page-break-before: always; break-before: page; }
+    .feature-page {
+      background: white; width: 100%; max-width: 800px; margin: 20px auto 0; padding: 40px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-radius: 8px; color: #000; font-family: 'Inter', sans-serif; display: none;
+    }
+    .feature-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .feature-table th, .feature-table td { border: 1px solid #cbd5e1; padding: 12px 15px; text-align: left; vertical-align: middle; font-size: 13px; line-height: 1.6; }
+    .feature-table th { background-color: var(--primary); color: white; font-weight: 600; text-transform: uppercase; text-align: center;}
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      @page { size: A4; margin: 0; }
+      body { background: white; padding: 0; }
+      .app-header, .card, .btn-submit, .footer-credits, .action-bar, .compare-btn { display: none !important; }
+      .main-container { max-width: 100%; margin: 0; }
+      .quote-wrapper { display: block !important; margin: 0; }
+      .a4-paper { box-shadow: none; margin: 0; width: 100%; max-width: 100%; padding: 15mm; border-radius: 0; }
+      .feature-page { box-shadow: none; margin: 0; width: 100%; max-width: 100%; padding: 15mm; border-radius: 0; }
+      table { page-break-inside: auto; }
+      tr { page-break-inside: avoid; page-break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+
+  <div class="app-header">
+    <h1>Sapo Quote Pro - Báo Giá Nhanh</h1>
+    <p>Công cụ cấu hình báo giá dành cho Team Sales · FNB HCM</p>
+  </div>
+
+  <!-- THÔNG TIN CƠ BẢN -->
+  <div class="card">
+    <div class="card-title">🏢 THÔNG TIN CƠ BẢN</div>
+
+    <div class="form-group">
+      <label class="field-label">Người báo giá (Hiển thị ở chân trang)</label>
+      <div class="input-row">
+        <div><input type="text" id="saleName" placeholder="Họ và tên" oninput="saveSaleInfo()"></div>
+        <div><input type="text" id="salePhone" placeholder="Số điện thoại" oninput="saveSaleInfo()"></div>
+      </div>
+      <input type="text" id="saleEmail" placeholder="Email (VD: trucnt@sapo.vn)" oninput="saveSaleInfo()" style="margin-top: 15px;">
+    </div>
+
+    <div class="form-group" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border-light);">
+      <label class="field-label">Tên khách hàng (Áp dụng cho Tiêu đề & Lời chào)</label>
+      <input type="text" id="customerName" placeholder="VD: Công ty TNHH ABC, Anh Tuấn...">
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+      <label class="field-label">Phân loại hình kinh doanh <span style="color:red">*</span></label>
+      <div class="option-grid">
+        <label class="radio-card active"><input type="radio" name="customerType" value="HKD" onchange="validateComboServices()" checked><span class="checkmark"></span> Hộ kinh doanh (HKD)</label>
+        <label class="radio-card"><input type="radio" name="customerType" value="DN" onchange="validateComboServices()"><span class="checkmark"></span> Doanh nghiệp (Cty)</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SO SÁNH 2 GÓI -->
+  <div class="compare-btn" id="btnToggleCompare" onclick="toggleCompare()">
+    <input type="checkbox" id="chkCompareMode" style="margin-right: 8px; cursor: pointer; transform: scale(1.2);" onclick="event.stopPropagation(); toggleCompare();">
+    ⚡ BẬT TÍNH NĂNG CHỐT DEAL: SO SÁNH 2 GÓI KHUYÊN DÙNG
+  </div>
+
+  <!-- CẤU HÌNH LỰA CHỌN 1 -->
+  <div id="mainConfigArea">
+    <div class="card" id="configOpt1">
+      <div class="card-title" id="titleOpt1">⚙️ CẤU HÌNH PHẦN MỀM - SAPO FNB (LỰA CHỌN 1)</div>
+      <div class="form-group">
+        <label class="field-label">Chọn gói phù hợp</label>
+        <div class="option-grid col-3" id="packageOptionsArea1"></div>
+      </div>
+
+      <div class="form-group" id="yearsSection1">
+        <label class="field-label">Thời gian đăng ký</label>
+        <div class="option-grid">
+          <label class="radio-card active"><input type="radio" name="years" value="12" onchange="syncOpt1AndCalculate()" checked><span class="checkmark"></span> 1 Năm (12 tháng)</label>
+          <label class="radio-card"><input type="radio" name="years" value="24" onchange="syncOpt1AndCalculate()"><span class="checkmark"></span> 2 Năm (24 tháng)</label>
+          <label class="radio-card" style="grid-column: span 2;"><input type="radio" name="years" value="36" onchange="syncOpt1AndCalculate()"><span class="checkmark"></span> 3 Năm (36 tháng) - Lời nhất</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KHUYẾN MÃI LỰA CHỌN 1 -->
+  <div id="dynamicPromoCard" class="card" style="display: none; border-color: var(--success); background-color: #f8fafc;">
+    <div class="card-title" style="color: var(--success); border-bottom-color: #bbf2d4;">🎁 CHƯƠNG TRÌNH KHUYẾN MÃI (LỰA CHỌN 1)</div>
+
+    <div class="form-group" id="secInitFee" style="display: none; border-bottom: 1px dashed var(--success); padding-bottom: 15px; margin-bottom: 15px;">
+      <label class="field-label">Phí khởi tạo dịch vụ (Áp dụng với gói 1 năm)</label>
+      <div class="option-grid">
+        <label class="radio-card active"><input type="radio" name="initFee" value="1500000" checked onchange="calculateTotal()"><span class="checkmark"></span> Thu phí (+1.500.000đ)</label>
+        <label class="radio-card"><input type="radio" name="initFee" value="0" onchange="calculateTotal()"><span class="checkmark"></span> Miễn phí khởi tạo</label>
+      </div>
+    </div>
+
+    <div class="form-group" id="secDiscount" style="display: none;">
+      <label class="field-label">Chiết khấu trực tiếp</label>
+      <div class="option-grid" id="discountOptionsArea"></div>
+    </div>
+
+    <div class="form-group" id="secBonus" style="margin-top: 20px;">
+      <label class="field-label">Tặng tháng sử dụng</label>
+      <div class="option-grid" id="bonusOptionsArea"></div>
+    </div>
+
+    <div class="form-group" id="secGift" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--success);">
+      <label class="field-label">Quà tặng thiết bị (Hoặc quy đổi)</label>
+      <div class="option-grid col-1" id="giftOptionsArea"></div>
+      <div id="dynamicRefundArea" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- CẤU HÌNH LỰA CHỌN 2 (COMPARE) -->
+  <div id="compareBlock2" style="display: none;">
+    <div class="card compare-active" style="border-color: var(--warning); background-color: #fffbeb;">
+      <div class="card-title" style="color: var(--warning); border-bottom-color: #fde68a;">⚙️ CẤU HÌNH GÓI SO SÁNH ĐỀ XUẤT (LỰA CHỌN 2)</div>
+
+      <div class="form-group">
+        <label class="field-label">Gói phần mềm (Nâng cấp)</label>
+        <div class="option-grid col-3" id="comp_packageOptionsArea"></div>
+      </div>
+
+      <div class="form-group" id="comp_yearsSection">
+        <label class="field-label">Thời gian đăng ký</label>
+        <div class="option-grid">
+          <label class="radio-card"><input type="radio" name="comp_years" value="12" onchange="syncOpt2AndCalculate()"><span class="checkmark"></span> 1 Năm (12 tháng)</label>
+          <label class="radio-card"><input type="radio" name="comp_years" value="24" onchange="syncOpt2AndCalculate()"><span class="checkmark"></span> 2 Năm (24 tháng)</label>
+          <label class="radio-card active" style="grid-column: span 2;"><input type="radio" name="comp_years" value="36" onchange="syncOpt2AndCalculate()" checked><span class="checkmark"></span> 3 Năm (36 tháng)</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="compPromoCard" class="card compare-active" style="display: none; border-color: var(--warning); background-color: #fffdf5;">
+      <div class="card-title" style="color: var(--warning); border-bottom-color: #fde68a;">🎁 KHUYẾN MÃI (LỰA CHỌN 2)</div>
+
+      <div class="form-group" id="comp_secInitFee" style="display: none; border-bottom: 1px dashed var(--warning); padding-bottom: 15px; margin-bottom: 15px;">
+        <label class="field-label">Phí khởi tạo dịch vụ (Áp dụng với gói 1 năm)</label>
+        <div class="option-grid">
+          <label class="radio-card active"><input type="radio" name="comp_initFee" value="1500000" checked onchange="calculateTotal()"><span class="checkmark"></span> Thu phí (+1.500.000đ)</label>
+          <label class="radio-card"><input type="radio" name="comp_initFee" value="0" onchange="calculateTotal()"><span class="checkmark"></span> Miễn phí khởi tạo</label>
+        </div>
+      </div>
+
+      <div class="form-group" id="comp_secDiscount"><label class="field-label">Chiết khấu trực tiếp</label><div class="option-grid" id="comp_discountArea"></div></div>
+      <div class="form-group" id="comp_secBonus" style="margin-top: 20px;"><label class="field-label">Tặng tháng sử dụng</label><div class="option-grid" id="comp_bonusArea"></div></div>
+      <div class="form-group" id="comp_secGift" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--warning);"><label class="field-label">Quà tặng thiết bị (Hoặc quy đổi)</label><div class="option-grid col-1" id="comp_giftArea"></div><div id="comp_dynamicRefundArea" style="display: none;"></div></div>
+    </div>
+  </div>
+
+  <!-- THIẾT BỊ MUA THÊM -->
+  <div class="card">
+    <div class="card-title">🛒 THIẾT BỊ MUA THÊM (CHỌN SỐ LƯỢNG & CHIẾT KHẤU)</div>
+    <div class="option-grid col-1" id="addonContainer"></div>
+
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border-light);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <label class="field-label" style="margin-bottom: 0;">Phí phát sinh / Dịch vụ khác (Nhập tay)</label>
+        <button type="button" onclick="addCustomFeeRow()" style="background: #e0f2fe; color: #0284c7; border: none; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: var(--shadow-sm);">+ Thêm dòng</button>
+      </div>
+      <div id="customFeeContainer"></div>
+    </div>
+  </div>
+
+  <!-- DỊCH VỤ KHÁC -->
+  <div class="card">
+    <div class="card-title">💼 DỊCH VỤ KHÁC: HÓA ĐƠN, CHỮ KÝ SỐ VÀ KHÁC</div>
+    <div id="otherServicesContainer"></div>
+  </div>
+
+  <!-- TÙY CHỌN XUẤT -->
+  <div class="card" style="background: #f8fafc; border-color: #cbd5e1;">
+    <div class="card-title" style="color: #334155; border-bottom-color: #cbd5e1;">🖨️ TÙY CHỌN XUẤT BÁO GIÁ</div>
+    <div class="option-grid">
+      <label class="radio-card active">
+        <input type="radio" name="quoteFormat" value="basic" checked onchange="refreshRadioActiveStates('quoteFormat')">
+        <span class="checkmark"></span> Rút gọn (Chỉ bảng giá)
+      </label>
+      <label class="radio-card">
+        <input type="radio" name="quoteFormat" value="detailed" onchange="refreshRadioActiveStates('quoteFormat')">
+        <span class="checkmark"></span> Chi tiết (Kèm Phụ lục tính năng)
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-submit" onclick="buildQuote()">TÍNH TIỀN & XUẤT BÁO GIÁ</button>
+
+  <div class="footer-credits">
+    ⚡ Developed & Optimized by <span class="team">Cuonglc</span><br>
+    <i>"Đẳng cấp chốt Deal - Bứt tốc doanh thu"</i>
+  </div>
+
+  <!-- KHU VỰC BÁO GIÁ -->
+  <div class="quote-wrapper" id="quoteWrapper">
+    <div class="action-bar">
+      <button class="btn-print" onclick="printQuote()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2-2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        In Báo Giá / Lưu File PDF
+      </button>
+    </div>
+
+    <div class="a4-paper" id="quoteArea">
+      <div class="quote-header">
+        <div class="header-top">
+          <div class="logo-sec">
+            <img src="https://www.sapo.vn/Themes/Portal/Default/StylesV2/images/logo/Sapo-logo.png?v=202603040413" alt="Sapo Logo">
+          </div>
+          <div class="info-sec">
+            <div class="company-name">CÔNG TY CỔ PHẦN CÔNG NGHỆ SAPO</div>
+            <div><b>Trụ sở :</b> Tầng 6, tòa nhà Ladeco, 266 Đội Cấn, Phường Ngọc Hà, Hà Nội</div>
+            <div><b>TP. HCM :</b> Tầng 5, Số 70 Lữ Gia, Phường Phú Thọ, TP HCM</div>
+            <div><b>Đà Nẵng :</b> Số 83 Xô Viết Nghệ Tĩnh, Phường Cẩm Lệ, TP Đà Nẵng</div>
+          </div>
+        </div>
+
+        <div class="quote-date">
+          TP. Hồ Chí Minh, ngày <span id="ngay"></span> tháng <span id="thang"></span> năm <span id="nam"></span>
+        </div>
+
+        <div class="quote-title-doc" id="docTitle">BẢNG GIÁ CUNG CẤP DỊCH VỤ SAPO FNB</div>
+
+        <div class="quote-intro">
+          <div><i>Kính gửi: <b id="outCustomerName">Quý khách hàng !</b></i></div>
+          <div style="margin-top: 8px;">
+            <i><b>Công ty cổ phần công nghệ SAPO</b> cảm ơn Quý khách hàng đã tin tưởng và quan tâm đến sản phẩm của chúng tôi. Theo yêu cầu của Quý khách, Sapo JSC kính gửi báo giá về dịch vụ như sau:</i>
+          </div>
+        </div>
+      </div>
+
+      <table id="quoteTable">
+        <thead id="tblHeader"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <div class="quote-footer" id="quoteFooter"></div>
+    </div>
+
+    <div class="a4-paper page-break feature-page" id="featurePageArea">
+      <div class="quote-header">
+        <div class="quote-title-doc" style="margin-bottom: 20px;">PHỤ LỤC: CHI TIẾT TÍNH NĂNG PHẦN MỀM</div>
+      </div>
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th width="10%">STT</th>
+            <th width="90%">MÔ TẢ TÍNH NĂNG NỔI BẬT</th>
+          </tr>
+        </thead>
+        <tbody id="featureTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // DATA
+  // ============================================================
+  const FNB_PACKAGES = [
+    { id: "startup",  name: "Sapo FnB Startup", price: 170000,   isCombo: false },
+    { id: "pro",      name: "Sapo FnB Pro",     price: 249000,   isCombo: false },
+    { id: "combo",    name: "FNB COMBO",         price: 7176000,  isCombo: true,
+      comboMonths: 24,
+      label: "Trọn gói 24 tháng" }
+  ];
+
+  const addonsData = [
+    { id: "S7Max",    name: "Máy tính tiền Sapo S7 Max",        price: 12900000, img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/may-ban-hang-s7-max-3.png?v=1748912966603", isPOS: true },
+    { id: "S7Pro",    name: "Máy tính tiền Sapo S7 Pro",        price: 9799000,  img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/img-3825.png?v=1747305348887", isPOS: true },
+    { id: "S6Max",    name: "Máy tính tiền S6 Max",             price: 6900000,  img: "https://bizweb.dktcdn.net/100/091/193/products/may-tinh-tien-sapo-s6-max-9dddd50e-87ff-4528-b301-05654e0b7384.png?v=1763709468200", isPOS: true },
+    { id: "Swan2",    name: "Máy tính tiền Swan 2",             price: 5990000,  img: "https://bizweb.dktcdn.net/100/091/193/products/swan2-4.png?v=1760928179197", isPOS: true },
+    { id: "S5Pro",    name: "Máy tính tiền S5 Pro",             price: 5000000,  img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/may-ban-hang-s5-pro.png?v=1753064185070", isPOS: true },
+    { id: "Swift2Pro",name: "Máy tính tiền cầm tay Swift 2 Pro",price: 4699000,  img: "https://bizweb.dktcdn.net/100/091/193/products/may-pos-tinh-tien-cam-tay-swift-2-pro.png?v=1750846903540", isPOS: true },
+    { id: "MC910",    name: "Máy đọc mã vạch để bàn MC910",    price: 1600000,  img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/may-doc-ma-vach-de-ban-mc910.jpg?v=1723188896647" },
+    { id: "TL31E",    name: "Máy in tem TL31E",                 price: 1590000,  img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/ma-y-in-tem-tl31e-3.jpg?v=1745370965630" },
+    { id: "SP460BT",  name: "Máy in tem sàn SP460BT",           price: 1490000,  img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/may-in-tem-san-sp460bt.png?v=1741574008630" },
+    { id: "SPR02",    name: "Máy in hóa đơn SPR02",             price: 1190000,  img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/spr02-den.png" },
+    { id: "SP21",     name: "Máy quét cầm tay SP21",            price: 900000,   img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/may-quet-ma-vach-sapo-sp21.png?v=1742781938867" },
+    { id: "JJ405",    name: "Ngăn kéo đựng tiền JJ405",         price: 900000,   img: "https://bizweb.dktcdn.net/100/091/193/products/ngan-keo-dung-tien-jj405-3.png?v=1762913594693" },
+    { id: "AT335",    name: "Két đựng tiền AT-335",             price: 800000,   img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/a-nh-3.png?v=1749172930020" },
+    { id: "POSE58",   name: "Máy in bluetooth POS-E58",         price: 650000,   img: "https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/may-in-bluetooth-pos-e58.jpg?v=1759977149507" },
+    { id: "QR03",     name: "Thiết bị hiển thị mã QR03",        price: 490000,   img: "https://bizweb.dktcdn.net/100/091/193/products/qr03-2.png?v=1750132986703" }
+  ];
+
+  const OTHER_SERVICES = [
+    { id: 'combo10k', name: 'Combo 10.000 hóa đơn và 1 năm CKS', price: 2500000 },
+    { id: 'combo5k',  name: 'Combo 5.000 hóa đơn và 1 năm CKS Intrust Remote Cá nhân', price: 1500000 }
+  ];
+
+  const FEATURE_DATA = {
+    "FNB_170000": [
+      "<b>Mô hình phù hợp:</b> Nhà hàng, quán ăn, cafe quy mô nhỏ (1 chi nhánh, tối đa 5 thiết bị bán hàng).",
+      "<b>Bán hàng & Order:</b> Order nhanh chóng trên nhiều thiết bị (điện thoại, máy tính bảng, máy POS).",
+      "<b>Thanh toán:</b> Tính tiền chính xác và in hóa đơn chuyên nghiệp.",
+      "<b>Quản lý kho:</b> Kiểm soát tốt số lượng nguyên vật liệu tồn kho.",
+      "<b>Báo cáo:</b> Xem báo cáo bán hàng trực quan, chi tiết."
+    ],
+    "FNB_249000": [
+      "<b>Mô hình phù hợp:</b> Quán quy mô vừa/lớn, mặc định 1 chi nhánh (dễ dàng mở chuỗi), không giới hạn thiết bị.",
+      "<b>Tự gọi món (QR Order):</b> Nâng cao trải nghiệm khách hàng với tính năng Khách tự order tại bàn qua mã QR.",
+      "<b>Quản lý chi phí:</b> Kiểm soát chặt chẽ giá cost (giá vốn) nguyên vật liệu chi tiết.",
+      "<b>Quản lý nhân sự:</b> Tích hợp hệ thống chấm công và quản lý thời gian làm việc của nhân viên.",
+      "<b>Lưu ý:</b> Bao gồm toàn bộ tính năng cơ bản của gói Start Up."
+    ],
+    "FNB_COMBO": [
+      "<b>Gói trọn bộ tối ưu chi phí:</b> Tích hợp Sapo FnB Pro 24 tháng với ưu đãi đặc biệt.",
+      "<b>Tự gọi món (QR Order):</b> Nâng cao trải nghiệm khách hàng với tính năng Khách tự order tại bàn qua mã QR.",
+      "<b>Quản lý chi phí:</b> Kiểm soát chặt chẽ giá cost (giá vốn) nguyên vật liệu chi tiết.",
+      "<b>Quản lý nhân sự:</b> Tích hợp hệ thống chấm công và quản lý thời gian làm việc của nhân viên.",
+      "<b>Ưu đãi đặc biệt:</b> Giá trọn gói tối ưu + quà tặng thiết bị theo chính sách FNB Pro."
+    ]
+  };
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let giftQuota = 0;
+  let isCompareMode = false;
+  let comp_giftQuota = 0;
+  let customFeeCount = 0;
+  const FIXED_OFFICE = "Tầng 5, Số 70 Lữ Gia, Phường Phú Thọ, TP. Hồ Chí Minh";
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  window.onload = function() {
+    loadSaleInfo();
+    renderPackages('packageOptionsArea1', 'package', 'syncOpt1AndCalculate()');
+    renderPackages('comp_packageOptionsArea', 'comp_package', 'syncOpt2AndCalculate()');
+    renderAddons();
+    renderOtherServices();
+    addCustomFeeRow();
+    syncOpt1AndCalculate();
+    syncOpt2AndCalculate();
+  };
+
+  // ============================================================
+  // RENDER PACKAGES (FNB only — 3 gói)
+  // ============================================================
+  function renderPackages(containerId, inputName, changeFn) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    let html = '';
+    FNB_PACKAGES.forEach((pkg, index) => {
+      const isChecked = index === 0 ? 'checked' : '';
+      const isActive  = index === 0 ? 'active'  : '';
+      let priceLabel = pkg.isCombo
+        ? `<span style="font-size:11px; color:#dc2626; font-weight:700;">${formatMoney(pkg.price)} trọn gói</span><br><span style="font-size:10px; color:#64748b;">${pkg.label}</span>`
+        : `<span style="font-size:12px; color:var(--primary);">${new Intl.NumberFormat('vi-VN').format(pkg.price)}đ/tháng</span>`;
+      let badge = pkg.isCombo ? `<span class="combo-badge">HOT</span>` : '';
+      html += `
+        <label class="radio-card ${isActive}" style="${pkg.isCombo ? 'border-color:#f59e0b; background:#fffbeb;' : ''}">
+          <input type="radio" name="${inputName}" value="${pkg.id}"
+                 data-price="${pkg.price}" data-name="${pkg.name}" data-iscombo="${pkg.isCombo}"
+                 onchange="${changeFn}" ${isChecked}>
+          <span class="checkmark"></span>
+          <div style="display:flex;flex-direction:column;">
+            <span style="font-weight:700;">${pkg.name}${badge}</span>
+            ${priceLabel}
+          </div>
+        </label>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // ============================================================
+  // HELPER: get selected package object
+  // ============================================================
+  function getSelectedPkg(inputName) {
+    const el = document.querySelector(`input[name="${inputName}"]:checked`);
+    if (!el) return null;
+    return FNB_PACKAGES.find(p => p.id === el.value) || null;
+  }
+
+  // ============================================================
+  // YEARS SECTION visibility
+  // ============================================================
+  function updateYearsVisibility(pkgId, yearsSectionId) {
+    const sec = document.getElementById(yearsSectionId);
+    if (!sec) return;
+    const pkg = FNB_PACKAGES.find(p => p.id === pkgId);
+    if (pkg && pkg.isCombo) {
+      sec.style.display = 'none';
+    } else {
+      sec.style.display = 'block';
+    }
+  }
+
+  // ============================================================
+  // SYNC OPT1
+  // ============================================================
+  function syncOpt1AndCalculate() {
+    refreshRadioActiveStates('package');
+    const pkg = getSelectedPkg('package');
+    if (!pkg) return;
+    updateYearsVisibility(pkg.id, 'yearsSection1');
+    updateFormUI();
+    calculateTotal();
+  }
+
+  // ============================================================
+  // SYNC OPT2
+  // ============================================================
+  function syncOpt2AndCalculate() {
+    refreshRadioActiveStates('comp_package');
+    const pkg = getSelectedPkg('comp_package');
+    if (!pkg) return;
+    updateYearsVisibility(pkg.id, 'comp_yearsSection');
+    updateFormUICompare();
+    calculateTotal();
+  }
+
+  // ============================================================
+  // TOGGLE COMPARE
+  // ============================================================
+  function toggleCompare() {
+    let chk = document.getElementById('chkCompareMode');
+    chk.checked = !chk.checked;
+    isCompareMode = chk.checked;
+    document.getElementById('compareBlock2').style.display = isCompareMode ? 'block' : 'none';
+    syncOpt1AndCalculate();
+  }
+
+  // ============================================================
+  // UPDATE PROMO UI — OPT1
+  // ============================================================
+  function updateFormUI() {
+    const pkg = getSelectedPkg('package');
+    if (!pkg) return;
+
+    const isCombo = pkg.isCombo;
+    const price   = pkg.price;
+    const pkgId   = pkg.id;
+
+    // Effective months: combo = 24, else read from radio
+    let months = isCombo ? 24 : parseInt(document.querySelector('input[name="years"]:checked')?.value || 12);
+
+    // Use Pro 36m rules for combo but cap bonus at 24m
+    const effectiveMonths = isCombo ? 36 : months;
+
+    buildPromoUI({
+      pkgPrice: isCombo ? 249000 : price, // combo uses Pro rules
+      months: effectiveMonths,
+      isCombo: isCombo,
+      maxBonusCap: isCombo ? 24 : effectiveMonths,
+      group: "FNB",
+      promoCardId: 'dynamicPromoCard',
+      secInitFeeId: 'secInitFee',
+      initFeeName: 'initFee',
+      secDiscountId: 'secDiscount',
+      discountAreaId: 'discountOptionsArea',
+      discountName: 'discount',
+      secBonusId: 'secBonus',
+      bonusAreaId: 'bonusOptionsArea',
+      bonusName: 'bonusMonths',
+      secGiftId: 'secGift',
+      giftAreaId: 'giftOptionsArea',
+      giftName: 'giftsCheck',
+      refundAreaId: 'dynamicRefundArea',
+      refundName: 'refundChoice',
+      giftQuotaVar: 'main'
+    });
+  }
+
+  // ============================================================
+  // UPDATE PROMO UI — OPT2
+  // ============================================================
+  function updateFormUICompare() {
+    const pkg = getSelectedPkg('comp_package');
+    if (!pkg) return;
+
+    const isCombo = pkg.isCombo;
+    const price   = pkg.price;
+
+    let months = isCombo ? 24 : parseInt(document.querySelector('input[name="comp_years"]:checked')?.value || 36);
+    const effectiveMonths = isCombo ? 36 : months;
+
+    buildPromoUI({
+      pkgPrice: isCombo ? 249000 : price,
+      months: effectiveMonths,
+      isCombo: isCombo,
+      maxBonusCap: isCombo ? 24 : effectiveMonths,
+      group: "FNB",
+      promoCardId: 'compPromoCard',
+      secInitFeeId: 'comp_secInitFee',
+      initFeeName: 'comp_initFee',
+      secDiscountId: 'comp_secDiscount',
+      discountAreaId: 'comp_discountArea',
+      discountName: 'comp_discount',
+      secBonusId: 'comp_secBonus',
+      bonusAreaId: 'comp_bonusArea',
+      bonusName: 'comp_bonusMonths',
+      secGiftId: 'comp_secGift',
+      giftAreaId: 'comp_giftArea',
+      giftName: 'comp_giftsCheck',
+      refundAreaId: 'comp_dynamicRefundArea',
+      refundName: 'comp_refundChoice',
+      giftQuotaVar: 'comp'
+    });
+  }
+
+  // ============================================================
+  // CORE PROMO BUILDER
+  // ============================================================
+  function buildPromoUI(cfg) {
+    const { pkgPrice, months, isCombo, maxBonusCap, group,
+            promoCardId, secInitFeeId, initFeeName,
+            secDiscountId, discountAreaId, discountName,
+            secBonusId, bonusAreaId, bonusName,
+            secGiftId, giftAreaId, giftName,
+            refundAreaId, refundName, giftQuotaVar } = cfg;
+
+    const promoCard  = document.getElementById(promoCardId);
+    const bonusArea  = document.getElementById(bonusAreaId);
+    const giftArea   = document.getElementById(giftAreaId);
+    const secInitFee = document.getElementById(secInitFeeId);
+    const secDiscount= document.getElementById(secDiscountId);
+    const secBonus   = document.getElementById(secBonusId);
+    const secGift    = document.getElementById(secGiftId);
+    const discArea   = document.getElementById(discountAreaId);
+    const refundArea = document.getElementById(refundAreaId);
+
+    // Reset
+    promoCard.style.display = 'none';
+    secInitFee.style.display = 'none';
+    secDiscount.style.display = 'none';
+    secBonus.style.display = 'none';
+    secGift.style.display = 'none';
+    bonusArea.innerHTML = ''; giftArea.innerHTML = '';
+    refundArea.innerHTML = ''; refundArea.style.display = 'none';
+
+    if (giftQuotaVar === 'main') giftQuota = 0;
+    else comp_giftQuota = 0;
+
+    // Default discount options
+    discArea.innerHTML = `
+      <label class="radio-card active"><input type="radio" name="${discountName}" value="0" checked onchange="calculateTotal()"><span class="checkmark"></span> Không giảm (0%)</label>
+      <label class="radio-card"><input type="radio" name="${discountName}" value="5" onchange="calculateTotal()"><span class="checkmark"></span> Giảm 5%</label>
+      <label class="radio-card"><input type="radio" name="${discountName}" value="10" onchange="calculateTotal()"><span class="checkmark"></span> Giảm 10%</label>
+    `;
+
+    function buildBonusHTML(monthsArr, defaultVal) {
+      // filter by cap
+      monthsArr = monthsArr.filter(m => m === 0 || m <= maxBonusCap);
+      return monthsArr.map(m => {
+        const isChecked = m === defaultVal ? 'checked' : '';
+        const isActive  = m === defaultVal ? 'active'  : '';
+        return `<label class="radio-card ${isActive}"><input type="radio" name="${bonusName}" value="${m}" ${isChecked} onchange="calculateTotal()"><span class="checkmark"></span> ${m === 0 ? 'Không tặng' : '+ ' + m + ' tháng'}</label>`;
+      }).join('');
+    }
+
+    // Quà tặng cơ bản (1 suất) — dùng cho mọi trường hợp có quà
+    const fnbGiftBase = `
+      <label class="check-card"><input type="checkbox" name="${giftName}" value="Ngăn kéo AT-335" data-type="normal" data-img="https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/a-nh-3.png?v=1749172930020" onchange="handleGiftSelectionAny('${giftName}','${refundAreaId}','${refundName}','${giftQuotaVar}')"><span class="checkmark"></span> Két AT-335</label>
+      <label class="check-card"><input type="checkbox" name="${giftName}" value="Máy in hóa đơn SPR02" data-type="normal" data-img="https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/spr02-den.png" onchange="handleGiftSelectionAny('${giftName}','${refundAreaId}','${refundName}','${giftQuotaVar}')"><span class="checkmark"></span> Máy in hóa đơn SPR02</label>
+      <label class="check-card"><input type="checkbox" name="${giftName}" value="Thiết bị hiển thị QR03" data-type="normal" data-img="https://bizweb.dktcdn.net/100/091/193/products/qr03-2.png?v=1750132986703" onchange="handleGiftSelectionAny('${giftName}','${refundAreaId}','${refundName}','${giftQuotaVar}')"><span class="checkmark"></span> Màn hình QR03</label>
+    `;
+    // Quà tặng có thêm TL31E (2 suất) — dùng cho Pro 36m và COMBO
+    const fnbGiftWith2Suất = fnbGiftBase + `
+      <label class="check-card"><input type="checkbox" name="${giftName}" value="Máy in tem TL31E" data-type="premium" data-img="https://bizweb.dktcdn.net/thumb/grande/100/091/193/products/ma-y-in-tem-tl31e-3.jpg?v=1745370965630" onchange="handleGiftSelectionAny('${giftName}','${refundAreaId}','${refundName}','${giftQuotaVar}')"><span class="checkmark"></span> Máy in tem TL31E <span style="font-size:11px;color:#dc2626;font-weight:700;margin-left:4px;">(Trừ 2 suất)</span></label>
+    `;
+    const fnbGiftFNB = fnbGiftBase;
+
+    let hasPromo = false;
+
+    // Init fee: chỉ áp cho non-combo 12 tháng
+    if (!isCombo && months === 12) {
+      hasPromo = true;
+      secInitFee.style.display = 'block';
+    }
+
+    if (pkgPrice === 249000) {
+      // Pro rules
+      if (months === 24) {
+        hasPromo = true;
+        if (giftQuotaVar === 'main') giftQuota = 1; else comp_giftQuota = 1;
+        secDiscount.style.display = 'block';
+        secBonus.style.display = 'block';
+        secGift.style.display = 'block';
+        bonusArea.innerHTML = buildBonusHTML([0,6,12,15,18,24], 6);
+        giftArea.innerHTML = fnbGiftFNB;
+      } else if (months === 36) {
+        hasPromo = true;
+        if (giftQuotaVar === 'main') giftQuota = 2; else comp_giftQuota = 2;
+        secDiscount.style.display = 'block';
+        secBonus.style.display = 'block';
+        secGift.style.display = 'block';
+        bonusArea.innerHTML = buildBonusHTML([0,6,12,15,18,24,36], 12);
+        giftArea.innerHTML = fnbGiftWith2Suất; // Pro 36m & COMBO: thêm TL31E (2 suất)
+      }
+    } else if (pkgPrice === 170000) {
+      // Startup FNB rules
+      if (months === 24) {
+        hasPromo = true;
+        secDiscount.style.display = 'block';
+      } else if (months === 36) {
+        hasPromo = true;
+        if (giftQuotaVar === 'main') giftQuota = 1; else comp_giftQuota = 1;
+        secDiscount.style.display = 'block';
+        secGift.style.display = 'block';
+        giftArea.innerHTML = fnbGiftBase; // Startup 36m: chỉ quà cơ bản (1 suất)
+      }
+    }
+
+    if (hasPromo) {
+      promoCard.style.display = 'block';
+      handleGiftSelectionAny(giftName, refundAreaId, refundName, giftQuotaVar);
+    }
+  }
+
+  // ============================================================
+  // GIFT SELECTION (unified)
+  // ============================================================
+  function handleGiftSelection()        { handleGiftSelectionAny('giftsCheck','dynamicRefundArea','refundChoice','main'); }
+  function handleGiftSelectionCompare() { handleGiftSelectionAny('comp_giftsCheck','comp_dynamicRefundArea','comp_refundChoice','comp'); }
+
+  function handleGiftSelectionAny(checkboxName, refundAreaId, radioName, quotaVar) {
+    let maxQuota = quotaVar === 'main' ? giftQuota : comp_giftQuota;
+    let checks = document.querySelectorAll(`input[name="${checkboxName}"]`);
+    let checkedNormal = 0, checkedPremium = 0;
+
+    checks.forEach(c => {
+      if (c.checked) {
+        c.parentElement.classList.add('active');
+        if (c.getAttribute('data-type') === 'premium') checkedPremium++; else checkedNormal++;
+      } else { c.parentElement.classList.remove('active'); }
+    });
+
+    let totalUsed = checkedNormal + (checkedPremium * 2);
+    checks.forEach(c => {
+      let cost = c.getAttribute('data-type') === 'premium' ? 2 : 1;
+      if (!c.checked && (totalUsed + cost > maxQuota)) {
+        c.disabled = true; c.parentElement.classList.add('disabled');
+      } else {
+        c.disabled = false; c.parentElement.classList.remove('disabled');
+      }
+    });
+
+    let remaining = maxQuota - totalUsed;
+    let refundArea = document.getElementById(refundAreaId);
+    if (remaining <= 0) { refundArea.style.display = 'none'; refundArea.innerHTML = ''; }
+    else if (remaining === 1) {
+      refundArea.style.display = 'block';
+      refundArea.innerHTML = `<div style="margin-top:15px;padding-top:15px;border-top:1px dashed #cbd5e1;"><label class="field-label" style="color:#b45309;">⚠️ Còn dư 1 suất quà. Vui lòng quy đổi:</label><div class="option-grid"><label class="radio-card active"><input type="radio" name="${radioName}" value="500" checked onchange="refreshRadioActiveStates('${radioName}');calculateTotal();"><span class="checkmark"></span> Hoàn 500k</label><label class="radio-card"><input type="radio" name="${radioName}" value="6m" onchange="refreshRadioActiveStates('${radioName}');calculateTotal();"><span class="checkmark"></span> Đổi +6 tháng</label></div></div>`;
+    } else if (remaining === 2) {
+      refundArea.style.display = 'block';
+      refundArea.innerHTML = `<div style="margin-top:15px;padding-top:15px;border-top:1px dashed #cbd5e1;"><label class="field-label" style="color:#b45309;">⚠️ Còn 2 suất quà. Vui lòng quy đổi:</label><div class="option-grid"><label class="radio-card active"><input type="radio" name="${radioName}" value="1000" checked onchange="refreshRadioActiveStates('${radioName}');calculateTotal();"><span class="checkmark"></span> Hoàn 1.000k</label><label class="radio-card"><input type="radio" name="${radioName}" value="12m" onchange="refreshRadioActiveStates('${radioName}');calculateTotal();"><span class="checkmark"></span> Đổi +12 tháng</label></div></div>`;
+    }
+    calculateTotal();
+  }
+
+  // ============================================================
+  // ADDONS
+  // ============================================================
+  function renderAddons() {
+    let html = '';
+    addonsData.forEach(ad => {
+      let discountHtml = ad.isPOS ? `
+        <div style="margin-top:8px;display:flex;align-items:center;gap:5px;">
+          <input type="number" id="discount_${ad.id}" class="discount-input" placeholder="% CK" min="0" max="100" onclick="event.stopPropagation()" oninput="event.stopPropagation();calculateTotal();">
+          <span style="font-size:11px;color:var(--text-muted);font-weight:normal;">% Chiết khấu</span>
+        </div>` : '';
+      html += `
+        <label class="check-card" id="card_${ad.id}">
+          <input type="checkbox" id="chk_${ad.id}" value="${ad.name}" data-price="${ad.price}" data-img="${ad.img}" onchange="toggleAddon('${ad.id}')">
+          <span class="checkmark"></span>
+          <div class="addon-item">
+            <div>
+              <span style="font-weight:600;">${ad.name}</span><br>
+              <span style="color:var(--primary);font-size:12px;font-weight:700;">${new Intl.NumberFormat('vi-VN').format(ad.price)} đ</span>
+              ${discountHtml}
+            </div>
+            <div class="qty-control">
+              <button type="button" class="qty-btn" onclick="updateQty('${ad.id}',-1,event)">-</button>
+              <input type="text" id="qty_${ad.id}" class="qty-input" value="0" readonly>
+              <button type="button" class="qty-btn plus" onclick="updateQty('${ad.id}',1,event)">+</button>
+            </div>
+          </div>
+        </label>`;
+    });
+    document.getElementById('addonContainer').innerHTML = html;
+  }
+
+  function toggleAddon(id) {
+    let chkBox = document.getElementById(`chk_${id}`);
+    let inputQty = document.getElementById(`qty_${id}`);
+    let card = document.getElementById(`card_${id}`);
+    if (chkBox.checked) { if(parseInt(inputQty.value)===0) inputQty.value=1; card.classList.add('active'); }
+    else { inputQty.value=0; card.classList.remove('active'); }
+    calculateTotal();
+  }
+
+  function updateQty(id, change, event) {
+    event.preventDefault();
+    let inputQty = document.getElementById(`qty_${id}`);
+    let chkBox = document.getElementById(`chk_${id}`);
+    let card = document.getElementById(`card_${id}`);
+    let newVal = Math.max(0, (parseInt(inputQty.value)||0) + change);
+    inputQty.value = newVal;
+    if (newVal > 0) { chkBox.checked=true; card.classList.add('active'); }
+    else { chkBox.checked=false; card.classList.remove('active'); }
+    calculateTotal();
+  }
+
+  function renderOtherServices() {
+    let html = '';
+    OTHER_SERVICES.forEach(sv => {
+      html += `
+        <label class="check-card" id="card_sv_${sv.id}">
+          <input type="checkbox" id="chk_sv_${sv.id}" data-price="${sv.price}" onchange="calculateTotal()">
+          <span class="checkmark"></span>
+          <div class="addon-item">
+            <div style="flex:1;">
+              <span style="font-weight:600;">${sv.name}</span><br>
+              <span style="color:var(--primary);font-size:12px;font-weight:700;">Đơn giá: ${new Intl.NumberFormat('vi-VN').format(sv.price)} đ</span>
+            </div>
+            <div class="qty-control">
+              <button type="button" class="qty-btn" onclick="updateQtySv('${sv.id}',-1,event)">-</button>
+              <input type="text" id="qty_sv_${sv.id}" class="qty-input" value="0" readonly>
+              <button type="button" class="qty-btn plus" onclick="updateQtySv('${sv.id}',1,event)">+</button>
+            </div>
+          </div>
+        </label>`;
+    });
+    document.getElementById('otherServicesContainer').innerHTML = html;
+  }
+
+  function updateQtySv(id, delta, event) {
+    if (event) event.preventDefault();
+    const input = document.getElementById(`qty_sv_${id}`);
+    const chk = document.getElementById(`chk_sv_${id}`);
+    let val = (parseInt(input.value)||0) + delta;
+    if (id === 'combo10k' || id === 'combo5k') {
+      let custType = document.querySelector('input[name="customerType"]:checked');
+      if (custType && custType.value !== 'HKD' && val > 0) { alert("❌ Gói Combo 2in1 này chỉ hỗ trợ cho khách hàng là HỘ KINH DOANH."); val=0; }
+      else if (val > 1) { alert("⚠️ Mỗi khách hàng chỉ được mua tối đa 01 gói Combo 2in1 này."); val=1; }
+    }
+    if (val < 0) val = 0;
+    input.value = val;
+    chk.checked = (val > 0);
+    const card = document.getElementById(`card_sv_${id}`);
+    if (val > 0) card.classList.add('active'); else card.classList.remove('active');
+    calculateTotal();
+  }
+
+  function validateComboServices() {
+    refreshRadioActiveStates('customerType');
+    let custType = document.querySelector('input[name="customerType"]:checked').value;
+    if (custType !== 'HKD') {
+      ['combo10k','combo5k'].forEach(id => {
+        let input = document.getElementById(`qty_sv_${id}`);
+        if (input && parseInt(input.value) > 0) updateQtySv(id, -parseInt(input.value), null);
+      });
+    }
+  }
+
+  // ============================================================
+  // CUSTOM FEE
+  // ============================================================
+  function addCustomFeeRow() {
+    customFeeCount++;
+    let container = document.getElementById('customFeeContainer');
+    let row = document.createElement('div');
+    row.className = 'input-row custom-fee-row';
+    row.style.marginBottom = '12px';
+    row.id = `customFeeRow_${customFeeCount}`;
+    row.innerHTML = `
+      <div style="flex:1.5;"><input type="text" class="cf-name" placeholder="Tên dịch vụ/phí..."></div>
+      <div style="flex:2;"><input type="text" class="cf-desc" placeholder="Mô tả chi tiết..."></div>
+      <div style="flex:1;"><input type="number" class="cf-price" placeholder="Giá (VNĐ)" oninput="calculateTotal()"></div>
+      <div style="flex:0 0 42px;"><button type="button" class="qty-btn" style="background:#fee2e2;color:#dc2626;width:100%;height:42px;font-size:14px;" onclick="removeCustomFeeRow('${row.id}')">✕</button></div>`;
+    container.appendChild(row);
+  }
+
+  function removeCustomFeeRow(id) {
+    let row = document.getElementById(id);
+    if(row) row.remove();
+    calculateTotal();
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  function formatMoney(amount) { return Math.round(amount).toLocaleString('vi-VN') + " đ"; }
+  function calculateTotal() {}
+
+  function refreshRadioActiveStates(name) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+      if (inp.checked) inp.parentElement.classList.add('active');
+      else inp.parentElement.classList.remove('active');
+    });
+  }
+
+  document.addEventListener('change', function(e) {
+    if(e.target.type==='radio' && !['giftsCheck','comp_giftsCheck'].includes(e.target.name)) {
+      refreshRadioActiveStates(e.target.name);
+    }
+  });
+
+  function saveSaleInfo() {
+    localStorage.setItem('sapoSaleName',  document.getElementById('saleName').value);
+    localStorage.setItem('sapoSalePhone', document.getElementById('salePhone').value);
+    localStorage.setItem('sapoSaleEmail', document.getElementById('saleEmail').value);
+  }
+
+  function loadSaleInfo() {
+    if (localStorage.getItem('sapoSaleName'))  document.getElementById('saleName').value  = localStorage.getItem('sapoSaleName');
+    if (localStorage.getItem('sapoSalePhone')) document.getElementById('salePhone').value = localStorage.getItem('sapoSalePhone');
+    if (localStorage.getItem('sapoSaleEmail')) document.getElementById('saleEmail').value = localStorage.getItem('sapoSaleEmail');
+  }
+
+  // ============================================================
+  // BUILD QUOTE
+  // ============================================================
+  function buildQuote() {
+    let today = new Date();
+    document.getElementById('ngay').innerText  = String(today.getDate()).padStart(2,'0');
+    document.getElementById('thang').innerText = String(today.getMonth()+1).padStart(2,'0');
+    document.getElementById('nam').innerText   = today.getFullYear();
+
+    let sName  = document.getElementById('saleName').value.trim()  || ".............................................";
+    let sPhone = document.getElementById('salePhone').value.trim() || ".............................................";
+    let sEmail = document.getElementById('saleEmail').value.trim() || ".............................................";
+    let cusName = document.getElementById('customerName').value.trim();
+    document.getElementById('outCustomerName').innerText = cusName || "Quý khách hàng !";
+
+    let tblHeader = document.getElementById('tblHeader');
+    let tbody     = document.getElementById('tableBody');
+    tbody.innerHTML = "";
+
+    const defaultImg = "https://www.sapo.vn/Themes/Portal/Default/StylesV2/images/logo/Sapo-logo.png?v=202603040413";
+
+    function getPkgDesc(pkgId) {
+      if (pkgId==='startup') return "Giải pháp tính tiền, in hóa đơn nhanh chóng cho quán Cafe, Trà sữa, Nhà hàng vừa và nhỏ.";
+      if (pkgId==='pro')     return "Giải pháp vận hành chuyên nghiệp: Chuẩn hóa định lượng chống thất thoát, Order QR Code thông minh, Quản lý từ xa.";
+      if (pkgId==='combo')   return "Gói trọn bộ tối ưu chi phí: Sapo FnB Pro 24 tháng, tích hợp đầy đủ tính năng QR Order, quản lý nhân sự, kiểm soát định lượng.";
+      return "";
+    }
+
+    function getGiftPrice(name) {
+      let n = name.toLowerCase();
+      if (n.includes("spr02")) return 1190000;
+      if (n.includes("sp21"))  return 900000;
+      if (n.includes("qr03"))  return 490000;
+      if (n.includes("at-335")||n.includes("két")||n.includes("ngăn kéo")) return 800000;
+      if (n.includes("tl31e")||n.includes("sp460bt")) return 1590000;
+      if (n.includes("triển khai")) return 4990000;
+      return 0;
+    }
+
+    // -- SHARED ADDONS --
+    let sharedAddonsHtml = "";
+    let sharedAddonTotal = 0;
+
+    addonsData.forEach(ad => {
+      let qty = parseInt(document.getElementById(`qty_${ad.id}`)?.value) || 0;
+      if (qty > 0) {
+        let discountInput = document.getElementById(`discount_${ad.id}`);
+        let itemDiscount  = discountInput ? (parseFloat(discountInput.value)||0) : 0;
+        let unitPrice     = ad.price * ((100-itemDiscount)/100);
+        let itemTotal     = qty * unitPrice;
+        sharedAddonTotal += itemTotal;
+        let addonDesc = "- Thiết bị mua thêm (Bảo hành 12T)";
+        if (itemDiscount > 0) addonDesc += `<br><span class="text-red">- Khuyến mãi máy: Giảm ${itemDiscount}%</span>`;
+        let displayPrice = itemDiscount > 0
+          ? `<span class="strike-price">${formatMoney(ad.price)}</span><br><span class="text-red">${formatMoney(unitPrice)}</span>`
+          : formatMoney(ad.price);
+        if (isCompareMode) {
+          sharedAddonsHtml += `<tr><td class="text-left"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><img src="${ad.img||defaultImg}" style="width:40px;height:40px;object-fit:contain;border-radius:4px;border:1px solid #e2e8f0;background:#fff;padding:2px;flex-shrink:0;"><span class="text-bold">${ad.name}</span></div><span style="color:#64748b;font-size:12px;">${addonDesc}</span></td><td colspan="2" class="text-bold" style="text-align:center;vertical-align:middle;">Số lượng: <span style="color:var(--primary);">x${qty}</span><br><span class="text-red text-bold" style="font-size:14px;">Thành tiền: ${formatMoney(itemTotal)}</span><div style="font-size:11px;color:#64748b;">(Áp dụng chung 2 lựa chọn)</div></td></tr>`;
+        } else {
+          sharedAddonsHtml += `<tr><td class="text-left"><span class="text-bold">${ad.name}</span><br><span style="color:#64748b;font-size:12px;">${addonDesc}</span></td><td class="text-bold">${displayPrice}</td><td class="text-bold" style="color:var(--primary);font-size:14px;">x ${qty}</td><td><img src="${ad.img||defaultImg}" class="device-img"></td><td class="text-red text-bold">${formatMoney(itemTotal)}</td></tr>`;
+        }
+      }
+    });
+
+    OTHER_SERVICES.forEach(sv => {
+      let qty = parseInt(document.getElementById(`qty_sv_${sv.id}`)?.value)||0;
+      let chk = document.getElementById(`chk_sv_${sv.id}`);
+      if (chk && chk.checked && qty > 0) {
+        let itemTotal = qty * sv.price;
+        sharedAddonTotal += itemTotal;
+        if (isCompareMode) {
+          sharedAddonsHtml += `<tr><td class="text-left"><span class="text-bold">${sv.name}</span><br><span style="color:#64748b;font-size:12px;">- Dịch vụ mở rộng</span></td><td colspan="2" class="text-bold" style="text-align:center;vertical-align:middle;">Số lượng: <span style="color:var(--primary);">x${qty}</span><br><span class="text-red text-bold" style="font-size:14px;">Thành tiền: ${formatMoney(itemTotal)}</span><div style="font-size:11px;color:#64748b;">(Áp dụng chung)</div></td></tr>`;
+        } else {
+          sharedAddonsHtml += `<tr><td class="text-left"><span class="text-bold">${sv.name}</span><br><span style="color:#64748b;font-size:12px;">- Dịch vụ mở rộng</span></td><td class="text-bold">${formatMoney(sv.price)}</td><td class="text-bold" style="color:var(--primary);font-size:14px;">x ${qty}</td><td><img src="${defaultImg}" class="device-img" style="opacity:0.3;"></td><td class="text-red text-bold">${formatMoney(itemTotal)}</td></tr>`;
+        }
+      }
+    });
+
+    document.querySelectorAll('.custom-fee-row').forEach(row => {
+      let cName  = row.querySelector('.cf-name').value.trim();
+      let cDesc  = row.querySelector('.cf-desc').value.trim();
+      let cPrice = parseInt(row.querySelector('.cf-price').value)||0;
+      if (cName !== "") {
+        sharedAddonTotal += cPrice;
+        let descHtml = cDesc ? `<br><span style="color:#64748b;font-size:12px;">- ${cDesc}</span>` : `<br><span style="color:#64748b;font-size:12px;">- Phí phát sinh/Dịch vụ</span>`;
+        if (isCompareMode) {
+          sharedAddonsHtml += `<tr><td class="text-left"><span class="text-bold">${cName}</span>${descHtml}</td><td colspan="2" class="text-bold" style="text-align:center;vertical-align:middle;"><span class="text-red text-bold" style="font-size:14px;">Thành tiền: ${formatMoney(cPrice)}</span></td></tr>`;
+        } else {
+          sharedAddonsHtml += `<tr><td class="text-left"><span class="text-bold">${cName}</span>${descHtml}</td><td class="text-bold">${formatMoney(cPrice)}</td><td class="text-bold">1</td><td><img src="${defaultImg}" class="device-img" style="opacity:0.3;"></td><td class="text-red text-bold">${formatMoney(cPrice)}</td></tr>`;
+        }
+      }
+    });
+
+    // ---- HELPER: compute one option's totals ----
+    function computeOption(pkgSel, yearsSel, initFeeSel, secInitFeeId, discSel, secDiscId, bonusSel, secBonusId, giftSel, secGiftId, refundSel, giftQuotaVal, maxBonusCap) {
+      const pkg = FNB_PACKAGES.find(p => p.id === pkgSel);
+      if (!pkg) return null;
+
+      const isCombo   = pkg.isCombo;
+      const months    = isCombo ? 24 : parseInt(yearsSel);
+      const basePrice = isCombo ? pkg.price : months * pkg.price;
+
+      // Init fee (combo không áp)
+      let initFeeAmount = 0, isFreeInit = false;
+      if (!isCombo && months === 12 && document.getElementById(secInitFeeId).style.display !== 'none') {
+        const initR = document.querySelector(`input[name="${initFeeSel}"]:checked`);
+        if (initR) { if (initR.value==="0") isFreeInit=true; else initFeeAmount=1500000; }
+      }
+
+      const discEl   = document.querySelector(`input[name="${discSel}"]:checked`);
+      const discPct  = (discEl && document.getElementById(secDiscId).style.display !== 'none') ? parseInt(discEl.value) : 0;
+      const bonusEl  = document.querySelector(`input[name="${bonusSel}"]:checked`);
+      const bonusMo  = (bonusEl && document.getElementById(secBonusId).style.display !== 'none') ? parseInt(bonusEl.value) : 0;
+
+      let giftDisc=0, extraBonus=0, giftRowsHTML='', giftsStr='';
+      if (document.getElementById(secGiftId).style.display !== 'none') {
+        document.querySelectorAll(`input[name="${giftSel}"]:checked`).forEach(cb => {
+          let gPrice = getGiftPrice(cb.value);
+          let priceDisp = gPrice>0 ? `<span style="text-decoration:line-through;color:#94a3b8;font-size:11px;display:block;margin-bottom:2px;">${formatMoney(gPrice)}</span>` : '';
+          giftRowsHTML += `<tr><td class="text-left"><span class="text-bold">${cb.value}</span><br><span style="color:#64748b;font-size:12px;">- Quà tặng kèm gói (Bảo hành 12T)</span></td><td class="text-bold">${priceDisp}<span class="text-green">0 đ</span></td><td class="text-bold">1</td><td><img src="${cb.getAttribute('data-img')||defaultImg}" class="device-img"></td><td class="text-bold">${priceDisp}<span class="text-green">0 đ</span></td></tr>`;
+          let imgTag = `<img src="${cb.getAttribute('data-img')||defaultImg}" style="width:24px;height:24px;border-radius:4px;border:1px solid #cbd5e1;object-fit:contain;background:#fff;">`;
+          let strikeHtml = gPrice>0 ? ` <span style="text-decoration:line-through;color:#94a3b8;font-size:11px;font-weight:normal;">(${formatMoney(gPrice)})</span>` : '';
+          giftsStr += `<div style="margin-top:4px;display:flex;align-items:center;gap:6px;">${imgTag}<span style="color:#15803d;font-weight:bold;font-size:12px;">+ Tặng: ${cb.value}${strikeHtml}</span></div>`;
+        });
+        const refEl = refundSel ? document.querySelector(`input[name="${refundSel}"]:checked`) : null;
+        if (refEl) {
+          if (refEl.value==="500")  giftDisc+=500000;
+          if (refEl.value==="1000") giftDisc+=1000000;
+          if (refEl.value==="6m")   extraBonus+=6;
+          if (refEl.value==="12m")  extraBonus+=12;
+        }
+      }
+
+      let totalBonus = bonusMo + extraBonus;
+      // cap check
+      if (totalBonus > maxBonusCap) {
+        alert(`❌ Tổng tháng tặng (${totalBonus}) vượt quá giới hạn cho phép (${maxBonusCap} tháng). Vui lòng điều chỉnh!`);
+        return { error: true };
+      }
+
+      let softTotal;
+      if (isCombo) {
+        softTotal = (basePrice - giftDisc) * ((100 - discPct) / 100);
+      } else {
+        softTotal = (basePrice - giftDisc) * ((100 - discPct) / 100);
+        softTotal += initFeeAmount;
+      }
+
+      let totalActiveMonths = months + totalBonus;
+      let daily = softTotal / (totalActiveMonths * 30);
+
+      return { pkg, isCombo, months, basePrice, softTotal, daily,
+               initFeeAmount, isFreeInit, discPct, bonusMo, extraBonus, totalBonus, totalActiveMonths,
+               giftDisc, giftRowsHTML, giftsStr };
+    }
+
+    // ---- SINGLE MODE ----
+    if (!isCompareMode) {
+      document.getElementById('docTitle').innerText = "BẢNG GIÁ DỊCH VỤ SAPO FNB";
+      tblHeader.innerHTML = `<tr><th width="35%">SẢN PHẨM / DỊCH VỤ</th><th width="15%">ĐƠN GIÁ</th><th width="10%">S.LƯỢNG</th><th width="15%">HÌNH ẢNH</th><th width="25%">THÀNH TIỀN</th></tr>`;
+
+      const pkgSel = document.querySelector('input[name="package"]:checked')?.value;
+      if (!pkgSel) return alert("Vui lòng chọn Gói Phần Mềm!");
+      const yearsSel = document.querySelector('input[name="years"]:checked')?.value || "12";
+
+      const d = computeOption(pkgSel, yearsSel, 'initFee','secInitFee','discount','secDiscount','bonusMonths','secBonus','giftsCheck','secGift','refundChoice', giftQuota, FNB_PACKAGES.find(p=>p.id===pkgSel)?.isCombo ? 24 : parseInt(yearsSel));
+      if (!d || d.error) return;
+
+      // Price label
+      let priceLabel = d.isCombo
+        ? `<span style="font-weight:700;color:#dc2626;font-size:14px;">${formatMoney(d.pkg.price)}</span><br><span style="font-size:11px;color:#64748b;">trọn gói ${d.pkg.label}</span>`
+        : `${formatMoney(d.pkg.price)}/tháng`;
+      let qtyLabel = d.isCombo ? `<span>Trọn gói</span>` : `${d.months} <span style="font-size:11px;">tháng</span>`;
+
+      let infoHtml = d.isCombo
+        ? `- Gói: <span class="text-bold">${d.pkg.label}</span><br>`
+        : `- Thời gian mua: <span class="text-bold">${d.months} tháng</span><br>`;
+
+      if (!d.isCombo && d.months===12) {
+        if (d.initFeeAmount>0) infoHtml += `- Phí khởi tạo: <span class="text-bold">1.500.000 đ</span><br>`;
+        if (d.isFreeInit) infoHtml += `- Phí khởi tạo: <span class="strike-price">1.500.000 đ</span> <span class="text-green text-bold">Miễn phí</span><br>`;
+      }
+      if (d.giftDisc>0)  infoHtml += `- Quy đổi quà: <span class="text-red">Trừ ${formatMoney(d.giftDisc)}</span><br>`;
+      if (d.bonusMo>0)   infoHtml += `- Ưu đãi gói: <span class="text-red">Tặng ${d.bonusMo} tháng</span><br>`;
+      if (d.extraBonus>0) infoHtml += `- Quy đổi quà: <span class="text-red">Tặng ${d.extraBonus} tháng</span><br>`;
+      if (d.discPct>0)   infoHtml += `- Chiết khấu tiền: <span class="text-red">${d.discPct}%</span><br>`;
+      infoHtml += `- Tổng thời gian sử dụng: <span class="text-green text-bold" style="font-size:13px;">${d.totalActiveMonths} tháng</span>`;
+
+      tbody.innerHTML += `<tr>
+        <td class="text-left">
+          <span class="text-bold" style="font-size:14px;color:var(--primary);">${d.pkg.name}${d.isCombo?'<span class="combo-badge">HOT</span>':''}</span><br>
+          <span style="color:#0f172a;font-size:12px;font-weight:600;line-height:1.5;margin-top:4px;margin-bottom:4px;display:inline-block;">- ${getPkgDesc(pkgSel)}</span><br>
+          <span style="color:#475569;font-size:12px;line-height:1.6;display:inline-block;margin-top:5px;">${infoHtml}</span>
+        </td>
+        <td class="text-bold">${priceLabel}</td>
+        <td class="text-bold">${qtyLabel}</td>
+        <td><img src="${defaultImg}" class="device-img"></td>
+        <td>
+          <span class="text-red text-bold" style="font-size:15px;">${formatMoney(d.softTotal)}</span><br>
+          <div class="daily-cost">Từ <span>${formatMoney(d.daily)}/ngày</span></div>
+        </td>
+      </tr>`;
+
+      tbody.innerHTML += d.giftRowsHTML;
+      tbody.innerHTML += sharedAddonsHtml;
+      let grandTotal = d.softTotal + sharedAddonTotal;
+      tbody.innerHTML += `<tr style="background-color:#f8fafc;border-top:2px solid var(--primary);"><td colspan="4" class="text-left text-bold" style="font-size:15px;color:var(--primary);">TỔNG CỘNG CẦN THANH TOÁN:</td><td class="text-red text-bold" style="font-size:18px;">${formatMoney(grandTotal)}</td></tr>`;
+
+    } else {
+      // ---- COMPARE MODE ----
+      document.getElementById('docTitle').innerText = "BẢNG BÁO GIÁ SO SÁNH GIẢI PHÁP SAPO FNB";
+      tblHeader.innerHTML = `<tr><th width="20%">HẠNG MỤC</th><th width="40%" style="background-color:#64748b;">LỰA CHỌN 1 (Tiêu chuẩn)</th><th width="40%" style="background-color:var(--warning);color:#000;">LỰA CHỌN 2 (Khuyên dùng)</th></tr>`;
+
+      function getOptData(prefix) {
+        const pName  = prefix==='1' ? 'package'        : 'comp_package';
+        const yName  = prefix==='1' ? 'years'          : 'comp_years';
+        const ifName = prefix==='1' ? 'initFee'        : 'comp_initFee';
+        const sifId  = prefix==='1' ? 'secInitFee'     : 'comp_secInitFee';
+        const dName  = prefix==='1' ? 'discount'       : 'comp_discount';
+        const sdId   = prefix==='1' ? 'secDiscount'    : 'comp_secDiscount';
+        const bName  = prefix==='1' ? 'bonusMonths'    : 'comp_bonusMonths';
+        const sbId   = prefix==='1' ? 'secBonus'       : 'comp_secBonus';
+        const gName  = prefix==='1' ? 'giftsCheck'     : 'comp_giftsCheck';
+        const sgId   = prefix==='1' ? 'secGift'        : 'comp_secGift';
+        const rName  = prefix==='1' ? 'refundChoice'   : 'comp_refundChoice';
+        const qVar   = prefix==='1' ? giftQuota        : comp_giftQuota;
+
+        const pkgSel = document.querySelector(`input[name="${pName}"]:checked`)?.value;
+        if (!pkgSel) return null;
+        const pkg = FNB_PACKAGES.find(p=>p.id===pkgSel);
+        const yearsSel = document.querySelector(`input[name="${yName}"]:checked`)?.value || "12";
+        const maxCap = pkg.isCombo ? 24 : parseInt(yearsSel);
+
+        return computeOption(pkgSel, yearsSel, ifName, sifId, dName, sdId, bName, sbId, gName, sgId, rName, qVar, maxCap);
+      }
+
+      let d1 = getOptData('1'); if(!d1||d1.error) return;
+      let d2 = getOptData('2'); if(!d2||d2.error) return;
+
+      function buildCompareDetails(d, pkgSel) {
+        let html = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><img src="${defaultImg}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;border:1px solid #e2e8f0;padding:2px;background:#fff;"><span style="font-size:14px;font-weight:700;color:var(--primary);">${d.pkg.name}${d.isCombo?'<span class="combo-badge">HOT</span>':''}</span></div>`;
+        html += `<div style="font-size:12px;color:#0f172a;font-weight:600;margin-bottom:8px;line-height:1.5;">- ${getPkgDesc(pkgSel)}</div>`;
+        html += d.isCombo ? `<div>Gói: <b>${d.pkg.label}</b></div>` : `<div>Đăng ký: <b>${d.months} tháng</b></div>`;
+        if (!d.isCombo && d.months===12) {
+          if (d.initFeeAmount>0) html += `<div>- Phí khởi tạo: <b>1.500.000 đ</b></div>`;
+          if (d.isFreeInit)      html += `<div>- Phí khởi tạo: <span class="strike-price">1.500.000 đ</span> <b class="text-green">Miễn phí</b></div>`;
+        }
+        if (d.giftDisc>0)   html += `<div>- Quy đổi quà: <b class="text-red">Trừ ${formatMoney(d.giftDisc)}</b></div>`;
+        if (d.bonusMo>0)    html += `<div>- Ưu đãi gói: <b class="text-red">Tặng ${d.bonusMo} tháng</b></div>`;
+        if (d.extraBonus>0) html += `<div>- Quy đổi quà: <b class="text-red">Tặng ${d.extraBonus} tháng</b></div>`;
+        if (d.discPct>0)    html += `<div>- Chiết khấu: <b class="text-red">${d.discPct}%</b></div>`;
+        html += d.giftsStr;
+        html += `<div style="margin-top:5px;padding-top:5px;border-top:1px dashed #cbd5e1;">Tổng thời gian dùng: <b style="color:#15803d">${d.totalActiveMonths} tháng</b></div>`;
+        return html;
+      }
+
+      const pkg1Sel = document.querySelector('input[name="package"]:checked')?.value;
+      const pkg2Sel = document.querySelector('input[name="comp_package"]:checked')?.value;
+
+      tbody.innerHTML += `
+        <tr>
+          <td class="text-left"><span class="text-bold" style="color:var(--primary);">PHẦN MỀM BÁN HÀNG</span><br><span style="color:#64748b;font-size:12px;margin-top:5px;display:block;">Giải pháp thiết kế tối ưu cho mô hình FNB.</span></td>
+          <td class="text-left" style="background-color:#f8fafc;">
+            ${buildCompareDetails(d1, pkg1Sel)}
+            <div style="margin-top:15px;text-align:center;"><div style="font-size:12px;color:#475569;">Thanh toán:</div><div class="text-bold" style="font-size:16px;">${formatMoney(d1.softTotal)}</div><div class="daily-cost">Từ ${formatMoney(d1.daily)}/ngày</div></div>
+          </td>
+          <td class="text-left highlight-opt2">
+            <div class="badge-fomo">🌟 ĐỀ XUẤT TỐI ƯU</div>
+            ${buildCompareDetails(d2, pkg2Sel)}
+            <div style="margin-top:15px;text-align:center;"><div style="font-size:12px;color:#b45309;">Thanh toán:</div><div class="text-bold text-red" style="font-size:18px;">${formatMoney(d2.softTotal)}</div><div style="margin-top:5px;display:inline-block;padding:3px 8px;background:#fee2e2;color:#b91c1c;border-radius:4px;font-weight:bold;font-size:11px;">Chỉ ${formatMoney(d2.daily)}/ngày</div></div>
+          </td>
+        </tr>`;
+
+      tbody.innerHTML += sharedAddonsHtml;
+      let g1 = d1.softTotal + sharedAddonTotal;
+      let g2 = d2.softTotal + sharedAddonTotal;
+      tbody.innerHTML += `<tr style="background-color:#f8fafc;border-top:2px solid var(--primary);"><td class="text-left text-bold" style="font-size:14px;color:var(--primary);">TỔNG CỘNG CẦN THANH TOÁN:</td><td class="text-bold" style="font-size:16px;text-align:center;vertical-align:middle;">${formatMoney(g1)}</td><td class="text-red text-bold highlight-opt2" style="font-size:20px;text-align:center;vertical-align:middle;">${formatMoney(g2)}</td></tr>`;
+    }
+
+    // FOOTER
+    document.getElementById('quoteFooter').innerHTML = `
+      <div style="margin-bottom:15px;">
+        <b style="color:var(--primary);">Ghi chú:</b><br>
+        <span style="color:#475569;font-size:13px;">
+        - Sản phẩm phần mềm không chịu thuế VAT.<br>
+        - Báo giá có giá trị trong vòng 07 ngày kể từ ngày xuất.
+        </span>
+      </div>
+      <div style="font-weight:700;color:var(--primary);margin-bottom:8px;">Mọi chi tiết xin liên hệ!</div>
+      <div class="contact-info">
+        <b>Nhân viên kinh doanh:</b> <span class="text-bold">${sName}</span><br>
+        <b>Điện thoại (Zalo):</b> <span class="text-bold">${sPhone}</span><br>
+        <b>Email liên hệ:</b> <span class="text-bold">${sEmail}</span><br>
+        <b style="vertical-align:top;">Địa chỉ:</b> <span style="display:inline-block;width:calc(100% - 170px);vertical-align:top;">${FIXED_OFFICE}</span>
+      </div>
+      <div style="margin-top:30px;font-weight:700;font-style:italic;text-align:center;color:var(--primary);font-size:16px;">Xin trân trọng cảm ơn!</div>`;
+
+    // FEATURE PAGE
+    let formatMode = document.querySelector('input[name="quoteFormat"]:checked').value;
+    let featurePageArea = document.getElementById('featurePageArea');
+    let featureTableBody = document.getElementById('featureTableBody');
+
+    if (formatMode === "detailed") {
+      const pkgSel = document.querySelector('input[name="package"]:checked')?.value;
+      let featureKey = pkgSel === 'combo' ? 'FNB_COMBO' : (pkgSel === 'pro' ? 'FNB_249000' : 'FNB_170000');
+      let features = FEATURE_DATA[featureKey] || [];
+      let fHtml = "";
+      features.forEach((f, index) => {
+        let parts = f.split(': ');
+        if (parts.length > 1) {
+          fHtml += `<tr><td style="text-align:center;font-weight:bold;color:var(--primary);">${index+1}</td><td><b style="color:#0f172a;">${parts[0]}:</b> ${parts.slice(1).join(': ')}</td></tr>`;
+        } else {
+          fHtml += `<tr><td style="text-align:center;font-weight:bold;color:var(--primary);">${index+1}</td><td>${f}</td></tr>`;
+        }
+      });
+      featureTableBody.innerHTML = fHtml;
+      featurePageArea.style.display = 'block';
+    } else {
+      featurePageArea.style.display = 'none';
+    }
+
+    let quoteWrapper = document.getElementById('quoteWrapper');
+    quoteWrapper.style.display = 'block';
+    setTimeout(() => { quoteWrapper.scrollIntoView({behavior:"smooth",block:"start"}); }, 100);
+  }
+
+  function printQuote() {
+    let originalTitle = document.title;
+    let cusName = document.getElementById('customerName').value.trim();
+    document.title = "BAO GIA SAPO FNB" + (cusName ? " - " + cusName : "");
+    window.print();
+    setTimeout(() => document.title = originalTitle, 500);
+  }
+</script>
+</body>
+</html>
